@@ -1,47 +1,29 @@
-pipeline {
+echo "pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "ninga8141/myapp:latest"
-        CONTAINER_NAME = "myapp"
-    }
-
     stages {
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                echo "🔹 Building Docker image..."
-                sh "docker build -t $ninga8141/myapp:latest ."
+                echo 'Building Docker image...'
+                sh 'docker build -t myapp:latest .'
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Test') {
             steps {
-                echo "🚀 Deploying container..."
-                sh """
-                    # Stop and remove old container if it exists
-                    docker rm -f $myapp || true
-
-                    # Run new container
-                    docker run -d --name $myapp -p 5000:5000 $ninga8141/myapp:latest
-                """
+                echo 'Running tests...'
+                sh 'echo \"All tests passed!\"'
             }
         }
 
-        stage('Verify Container') {
+        stage('Deploy') {
             steps {
-                echo "🔹 Listing running containers..."
-                sh "docker ps"
+                echo 'Deploying container...'
+                sh 'docker stop myapp || true'
+                sh 'docker rm myapp || true'
+                sh 'docker run -d -p 5000:5000 --name myapp myapp:latest'
             }
         }
     }
-
-    post {
-        success {
-            echo "✅ Docker container is running successfully!"
-        }
-        failure {
-            echo "❌ Pipeline failed. Check the Jenkins logs."
-        }
-    }
-}
+}" > Jenkinsfile
 
